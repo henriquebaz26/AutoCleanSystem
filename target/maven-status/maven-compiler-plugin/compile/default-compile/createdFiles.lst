@@ -1,2 +1,4 @@
 br\com\autocleansystem\dal\ModuloConexao.class
+br\com\autocleansystem\telas\TelaPrincipal.class
+br\com\autocleansystem\telas\TelaPrincipal$1.class
 br\com\autocleansystem\telas\TelaLogin.class
