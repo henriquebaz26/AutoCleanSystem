@@ -8,15 +8,136 @@ package br.com.autocleansystem.telas;
  *
  * @author h24he
  */
+import java.sql.*;
+import br.com.autocleansystem.dal.ModuloConexao;
+import javax.swing.JOptionPane;
+
 public class TelaUsuario extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaUsuario.class.getName());
+
+    Connection conexao = null;
+    PreparedStatement pst = null;
+    ResultSet rs = null;
 
     /**
      * Creates new form TelaUsuario
      */
     public TelaUsuario() {
         initComponents();
+        conexao = ModuloConexao.conector();
+    }
+
+    private void consultar() {
+        String sql = "select * from tbusuarios where iduser=?";
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtUsuarioId.getText());
+            rs = pst.executeQuery();
+
+            if (rs.next()) {
+                txtUsuarioNome.setText(rs.getString(2));
+                txtUsuarioFone.setText(rs.getString(3));
+                txtUsuarioLogin.setText(rs.getString(4));
+                txtUsuarioSenha.setText(rs.getString(5));
+                cboUsuarioPerfil.setSelectedItem(rs.getString(6));
+                
+                btnUsuarioCreate.setEnabled(false);
+                btnUsuarioUpdate.setEnabled(true);
+                btnUsuarioDelete.setEnabled(true);
+            } else {
+                JOptionPane.showMessageDialog(null, "Usuário não cadastrado");
+                limpar();
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    private void adicionar() {
+        String sql = "insert into tbusuarios(iduser,usuario,fone,login,senha,perfil) values(?,?,?,?,?,?)";
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtUsuarioId.getText());
+            pst.setString(2, txtUsuarioNome.getText());
+            pst.setString(3, txtUsuarioFone.getText());
+            pst.setString(4, txtUsuarioLogin.getText());
+            pst.setString(5, txtUsuarioSenha.getText());
+            pst.setString(6, cboUsuarioPerfil.getSelectedItem().toString());
+
+            if ((txtUsuarioId.getText().isEmpty()) || (txtUsuarioNome.getText().isEmpty()) || (txtUsuarioLogin.getText().isEmpty()) || (txtUsuarioSenha.getText().isEmpty())) {
+                JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios");
+            } else {
+                int adicionado = pst.executeUpdate();
+
+                if (adicionado > 0) {
+                    JOptionPane.showMessageDialog(null, "Usuário adicionado com sucesso");
+                    limpar();
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+    
+    private void alterar() {
+        String sql = "update tbusuarios set usuario=?,fone=?,login=?,senha=?,perfil=? where iduser=?";
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtUsuarioNome.getText());
+            pst.setString(2, txtUsuarioFone.getText());
+            pst.setString(3, txtUsuarioLogin.getText());
+            pst.setString(4, txtUsuarioSenha.getText());
+            pst.setString(5, cboUsuarioPerfil.getSelectedItem().toString());
+            pst.setString(6, txtUsuarioId.getText());
+            
+            if ((txtUsuarioId.getText().isEmpty()) || (txtUsuarioNome.getText().isEmpty()) || (txtUsuarioLogin.getText().isEmpty()) || (txtUsuarioSenha.getText().isEmpty())) {
+                JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios");
+            } else {
+                int alterado = pst.executeUpdate();
+                
+                if (alterado > 0) {
+                    JOptionPane.showMessageDialog(null, "Dados usuário alterados com sucesso");
+                    limpar();
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+    
+    private void remover() {
+        int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover este usuário?", "ATENÇÃO", JOptionPane.YES_NO_OPTION);
+        
+        if (confirma == JOptionPane.YES_OPTION) {
+            String sql = "delete from tbusuarios where iduser=?";
+            try {
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, txtUsuarioId.getText());
+                int apagado = pst.executeUpdate();
+                
+                if (apagado > 0) {
+                    JOptionPane.showMessageDialog(null, "Usuário removido com sucesso");
+                    limpar();
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e);
+            }
+        }
+    }
+    
+    private void limpar() {
+        txtUsuarioId.setText(null);
+        txtUsuarioNome.setText(null);
+        txtUsuarioFone.setText(null);
+        txtUsuarioLogin.setText(null);
+        txtUsuarioSenha.setText(null);
+        cboUsuarioPerfil.setSelectedItem("user");
+        
+        btnUsuarioCreate.setEnabled(true);
+        btnUsuarioRead.setEnabled(true);
+        btnUsuarioUpdate.setEnabled(false);
+        btnUsuarioDelete.setEnabled(false);
     }
 
     /**
@@ -86,20 +207,30 @@ public class TelaUsuario extends javax.swing.JFrame {
         cboUsuarioPerfil.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "user", "admin" }));
 
         btnUsuarioCreate.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icones/create.png"))); // NOI18N
+        btnUsuarioCreate.setToolTipText("Adicionar");
         btnUsuarioCreate.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnUsuarioCreate.setPreferredSize(new java.awt.Dimension(90, 90));
+        btnUsuarioCreate.addActionListener(this::btnUsuarioCreateActionPerformed);
 
         btnUsuarioRead.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icones/read.png"))); // NOI18N
+        btnUsuarioRead.setToolTipText("Consultar");
         btnUsuarioRead.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnUsuarioRead.setPreferredSize(new java.awt.Dimension(90, 90));
+        btnUsuarioRead.addActionListener(this::btnUsuarioReadActionPerformed);
 
         btnUsuarioUpdate.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icones/update.png"))); // NOI18N
+        btnUsuarioUpdate.setToolTipText("Alterar");
         btnUsuarioUpdate.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnUsuarioUpdate.setEnabled(false);
         btnUsuarioUpdate.setPreferredSize(new java.awt.Dimension(90, 90));
+        btnUsuarioUpdate.addActionListener(this::btnUsuarioUpdateActionPerformed);
 
         btnUsuarioDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icones/delete.png"))); // NOI18N
+        btnUsuarioDelete.setToolTipText("Remover");
         btnUsuarioDelete.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnUsuarioDelete.setEnabled(false);
         btnUsuarioDelete.setPreferredSize(new java.awt.Dimension(90, 90));
+        btnUsuarioDelete.addActionListener(this::btnUsuarioDeleteActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -191,6 +322,30 @@ public class TelaUsuario extends javax.swing.JFrame {
     private void txtUsuarioSenhaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUsuarioSenhaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtUsuarioSenhaActionPerformed
+
+    private void btnUsuarioCreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUsuarioCreateActionPerformed
+        // TODO add your handling code here:
+        
+        adicionar();
+    }//GEN-LAST:event_btnUsuarioCreateActionPerformed
+
+    private void btnUsuarioReadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUsuarioReadActionPerformed
+        // TODO add your handling code here:
+        
+        consultar();
+    }//GEN-LAST:event_btnUsuarioReadActionPerformed
+
+    private void btnUsuarioUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUsuarioUpdateActionPerformed
+        // TODO add your handling code here:
+        
+        alterar();
+    }//GEN-LAST:event_btnUsuarioUpdateActionPerformed
+
+    private void btnUsuarioDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUsuarioDeleteActionPerformed
+        // TODO add your handling code here:
+        
+        remover();
+    }//GEN-LAST:event_btnUsuarioDeleteActionPerformed
 
     /**
      * @param args the command line arguments
