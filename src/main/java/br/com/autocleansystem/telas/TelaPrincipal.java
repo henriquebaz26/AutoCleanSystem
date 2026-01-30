@@ -6,6 +6,7 @@ package br.com.autocleansystem.telas;
 
 import java.text.DateFormat;
 import java.util.Date;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -135,6 +136,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         menuOpcoesSair.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_DOWN_MASK));
         menuOpcoesSair.setText("Sair");
+        menuOpcoesSair.addActionListener(this::menuOpcoesSairActionPerformed);
         menuOpcoes.add(menuOpcoesSair);
 
         menu.add(menuOpcoes);
@@ -184,6 +186,15 @@ public class TelaPrincipal extends javax.swing.JFrame {
         TelaUsuario usuario = new TelaUsuario();
         usuario.setVisible(true);
     }//GEN-LAST:event_menuCadastroUsuarioActionPerformed
+
+    private void menuOpcoesSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuOpcoesSairActionPerformed
+        // TODO add your handling code here:
+
+        int sair = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja sair?", "Atenção", JOptionPane.YES_NO_OPTION);
+        if (sair == JOptionPane.YES_OPTION) {
+            System.exit(0);
+        }
+    }//GEN-LAST:event_menuOpcoesSairActionPerformed
 
     /**
      * @param args the command line arguments
