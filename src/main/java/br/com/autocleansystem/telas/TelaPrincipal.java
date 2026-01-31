@@ -44,8 +44,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
         menuRelatorio = new javax.swing.JMenu();
         menuRelatorioClientes = new javax.swing.JMenuItem();
         menuRelatorioServicos = new javax.swing.JMenuItem();
-        menuAjuda = new javax.swing.JMenu();
-        menuAjudaSobre = new javax.swing.JMenuItem();
         menuOpcoes = new javax.swing.JMenu();
         menuOpcoesSair = new javax.swing.JMenuItem();
 
@@ -123,14 +121,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
         menuRelatorio.add(menuRelatorioServicos);
 
         menu.add(menuRelatorio);
-
-        menuAjuda.setText("Ajuda");
-
-        menuAjudaSobre.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, java.awt.event.InputEvent.ALT_DOWN_MASK));
-        menuAjudaSobre.setText("Sobre");
-        menuAjuda.add(menuAjudaSobre);
-
-        menu.add(menuAjuda);
 
         menuOpcoes.setText("Opções");
 
@@ -227,8 +217,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
     public static javax.swing.JLabel lblData;
     public static javax.swing.JLabel lblUsuario;
     private javax.swing.JMenuBar menu;
-    private javax.swing.JMenu menuAjuda;
-    private javax.swing.JMenuItem menuAjudaSobre;
     private javax.swing.JMenu menuCadastro;
     private javax.swing.JMenuItem menuCadastroCliente;
     private javax.swing.JMenuItem menuCadastroOS;
